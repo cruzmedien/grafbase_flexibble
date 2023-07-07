@@ -12,7 +12,7 @@ export const authOptions: NextAuthOptions = {
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-        })
+        }),
     ],
     jwt: {
         encode: ({secret, token}) => {
@@ -20,18 +20,18 @@ export const authOptions: NextAuthOptions = {
                 ...token,
                 iss: 'grafbase',
                 exp: Math.floor(Date.now() / 1000) + 60 * 60
-            }, secret)
+            }, secret);
             return encodedToken;
         },
         decode: async ({secret, token}) => {
-            const decodedToken = jsonwebtoken.verify(token!, secret) as JWT;
+            const decodedToken = jsonwebtoken.verify(token!, secret);
 
-            return decodedToken;
-        }
+            return decodedToken as JWT;
+        },
     },
     theme: {
         colorScheme: 'light',
-        logo: '/logo.png'
+        logo: '/logo.svg'
     },
     callbacks: {
         async session({session}) {
@@ -45,11 +45,11 @@ export const authOptions: NextAuthOptions = {
                     user: {
                         ...session.user,
                         ...data?.user
-                    }
-                }
+                    },
+                };
                 return newSession;
-            } catch (error) {
-                console.log('Error retriving user data', error);
+            } catch (error: any) {
+                console.error("Error retrieving user data: ", error.message);
                 return session;
             }
         }
@@ -68,7 +68,7 @@ export const authOptions: NextAuthOptions = {
 
                 return true;
             } catch (error: any) {
-                console.log(error);
+                console.log("Error checking if user exists: ", error.message);
                 return false;
             }
         }
